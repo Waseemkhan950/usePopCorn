@@ -52,6 +52,7 @@ const average = (arr) =>
 // App component | Structural Component
 export default function App() {
 	const [movies, setMovies] = useState(tempMovieData);
+	const [watched, setWatched] = useState(tempWatchedData);
 	return (
 		<>
 			<NavBar>
@@ -61,11 +62,14 @@ export default function App() {
 				<NumResult movies={movies} />
 			</NavBar>
 			<Main>
-				<ListBox>
+				<Box>
 					{/* here we are passing component as children that needs movie props */}
 					<MovieList movies={movies} />
-				</ListBox>
-				<WatchedBox />
+				</Box>
+				<Box>
+					<WatchedSummary watched={watched} />
+					<WatchedMoviesList watched={watched} />
+				</Box>
 			</Main>
 		</>
 	);
@@ -126,8 +130,9 @@ function Main({ children }) {
 	);
 }
 // left box component | Stateful Component
-function ListBox({ children }) {
-	const [isOpen1, setIsOpen1] = useState(true);
+// This box component is reusable; whatever is passed in children is rendered; always strive to make such components to create UI and prevent prop drilling issue.
+function Box({ children }) {
+	const [isOpen, setIsOpen1] = useState(true);
 
 	return (
 		<>
@@ -135,13 +140,36 @@ function ListBox({ children }) {
 				<button
 					className="btn-toggle"
 					onClick={() => setIsOpen1((open) => !open)}>
-					{isOpen1 ? "–" : "+"}
+					{isOpen ? "–" : "+"}
 				</button>
-				{isOpen1 && children}
+				{isOpen && children}
 			</div>
 		</>
 	);
 }
+// right box component | stateful component
+// function WatchedBox() {
+// 	const [isOpen2, setIsOpen2] = useState(true);
+// 	const [watched, setWatched] = useState(tempWatchedData);
+
+// 	return (
+// 		<>
+// 			<div className="box">
+// 				<button
+// 					className="btn-toggle"
+// 					onClick={() => setIsOpen2((open) => !open)}>
+// 					{isOpen2 ? "–" : "+"}
+// 				</button>
+// 				{isOpen2 && (
+// 					<>
+// 						<WatchedSummary watched={watched} />
+// 						<WatchedMoviesList watched={watched} />
+// 					</>
+// 				)}
+// 			</div>
+// 		</>
+// 	);
+// }
 // MovieList component | Stateful component
 function MovieList({ movies }) {
 	return (
@@ -171,29 +199,7 @@ function Movie({ movie }) {
 		</>
 	);
 }
-// right box component | stateful component
-function WatchedBox() {
-	const [isOpen2, setIsOpen2] = useState(true);
-	const [watched, setWatched] = useState(tempWatchedData);
 
-	return (
-		<>
-			<div className="box">
-				<button
-					className="btn-toggle"
-					onClick={() => setIsOpen2((open) => !open)}>
-					{isOpen2 ? "–" : "+"}
-				</button>
-				{isOpen2 && (
-					<>
-						<WatchedSummary watched={watched} />
-						<WatchedMoviesList watched={watched} />
-					</>
-				)}
-			</div>
-		</>
-	);
-}
 // WatchedSummary component | Presentational component
 function WatchedSummary({ watched }) {
 	const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
